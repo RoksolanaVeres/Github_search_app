@@ -8,13 +8,13 @@ const profile = document.querySelector(".profile");
 class API {
   clientId = "9e184f030bef81d2d1e2";
   clientSecret = "7408dea0478cfcf858f710601802b869d69e9040";
-
+  headers = {
+    Authorization: `Basic ${btoa(this.clientId + ":" + this.clientSecret)}`,
+  };
   async getUser(userName) {
     const response = await fetch(`https://api.github.com/users/${userName}`, {
       method: "GET",
-      headers: {
-        Authorization: `Basic ${btoa(this.clientId + ":" + this.clientSecret)}`,
-      },
+      headers: this.headers,
     });
     const data = await response.json();
 
@@ -30,11 +30,7 @@ class API {
       `https://api.github.com/users/${userName}/repos?per_page=5`,
       {
         method: "GET",
-        headers: {
-          Authorization: `Basic ${btoa(
-            this.clientId + ":" + this.clientSecret
-          )}`,
-        },
+        headers: this.headers,
       }
     );
     const reposData = await response.json();
@@ -71,25 +67,19 @@ class UI {
       </div>
       <h3 class="page-heading mb-3">Latest Repos</h3>
       <div class="repos"> 
-            <ul class="list-group">
-              <li class="list-group-item">Repository name: ${reposInfo[0].name}; <br/>
-              Repository url: ${reposInfo[0].url};<br/>
-            Last update: ${reposInfo[0].updated_at}; </li>
-            <li class="list-group-item">Repository name: ${reposInfo[1].name}; <br/>
-              Repository url: ${reposInfo[1].url};<br/>
-            Last update: ${reposInfo[1].updated_at}; </li>
-            <li class="list-group-item">Repository name: ${reposInfo[2].name}; <br/>
-              Repository url: ${reposInfo[2].url};<br/>
-            Last update: ${reposInfo[2].updated_at}; </li>
-            <li class="list-group-item">Repository name: ${reposInfo[3].name}; <br/>
-              Repository url: ${reposInfo[3].url};<br/>
-            Last update: ${reposInfo[3].updated_at}; </li>
-            <li class="list-group-item">Repository name: ${reposInfo[4].name}; <br/>
-              Repository url: ${reposInfo[4].url};<br/>
-            Last update: ${reposInfo[4].updated_at}; </li>
-            </ul>
       </div>
     `;
+
+    const reposDiv = profile.querySelector(".repos");
+    const reposList = document.createElement("ol");
+    reposDiv.append(reposList);
+    reposInfo.map((repo) => {
+      const repoLi = document.createElement("li");
+      reposList.append(repoLi);
+      repoLi.textContent = `Repository name: ${repo.name}; 
+                            Repository url: ${repo.url};
+                            Last update: ${repo.updated_at};`;
+    });
   }
 
   clearProfile() {
